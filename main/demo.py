@@ -59,16 +59,17 @@ def resize_image(img):
 
 
 def splitTable(oriImg):
-    img = cv.cvtColor(oriImg, cv.COLOR_RGB2GRAY)
+    img = oriImg.copy()
+    grayImg = cv.cvtColor(oriImg, cv.COLOR_RGB2GRAY)
 
-    tablePointer, rectPoint = ts.tableSeg(img)
+    tablePointer, rectPoint = ts.tableSeg(grayImg)
     rectPoint = rectPoint.tolist()
     rectPoint.sort(key=lambda x: (x[1], x[0]))
 
     # 将表格部分置为白色
     for i, pointer in enumerate(tablePointer):
         x, y, w, h = pointer
-        cv.rectangle(img, (x, y), (x + w, y + h), 255, -1)
+        cv.rectangle(img, (x, y), (x + w, y + h), (255,255,255), -1)
 
     return img, rectPoint
 
@@ -122,7 +123,7 @@ def main(argv=None):
                 imgWithoutTable, rectPoint = splitTable(im)
                 refineRectPoint = refineTable(rectPoint)
 
-                imgWithoutTable = cv.cvtColor(im, cv.COLOR_GRAY2RGB)
+                # imgWithoutTable = cv.cvtColor(im, cv.COLOR_GRAY2RGB)
 
 
                 img, (rh, rw) = resize_image(imgWithoutTable)
