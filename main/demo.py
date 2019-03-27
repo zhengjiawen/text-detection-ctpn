@@ -7,7 +7,6 @@ import time
 import cv2
 import numpy as np
 import tensorflow as tf
-import cv2 as cv
 
 
 sys.path.append(os.getcwd())
@@ -60,7 +59,7 @@ def resize_image(img):
 
 def splitTable(oriImg):
     img = oriImg.copy()
-    grayImg = cv.cvtColor(oriImg, cv.COLOR_RGB2GRAY)
+    grayImg = cv2.cvtColor(oriImg, cv2.COLOR_RGB2GRAY)
 
     tablePointer, rectPoint = ts.tableSeg(grayImg)
     rectPoint = rectPoint.tolist()
@@ -69,7 +68,7 @@ def splitTable(oriImg):
     # 将表格部分置为白色
     for i, pointer in enumerate(tablePointer):
         x, y, w, h = pointer
-        cv.rectangle(img, (x, y), (x + w, y + h), (255,255,255), -1)
+        cv2.rectangle(img, (x, y), (x + w, y + h), (255,255,255), -1)
 
     return img, rectPoint
 
@@ -155,7 +154,7 @@ def main(argv=None):
                                   thickness=2)
                 for point in refineRectPoint:
                     x, y, w, h = point
-                    cv.rectangle(im, (x, y), (x + w, y + h), (255, 0, 0))
+                    cv2.rectangle(im, (x, y), (x + w, y + h), (255, 0, 0))
                 # img = cv2.resize(img, None, None, fx=1.0 / rh, fy=1.0 / rw, interpolation=cv2.INTER_LINEAR)
                 cv2.imwrite(os.path.join(FLAGS.output_path, os.path.basename(im_fn)), im[:, :, ::-1])
 
