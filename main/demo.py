@@ -73,7 +73,6 @@ def splitTable(oriImg):
     return img, rectPoint
 
 def refineTable(rectPoint):
-    rectPoint = rectPoint.tolist()
     rectPoint.sort(key=lambda  x:(x[1], x[0]))
 
     # 切割出cell
@@ -118,7 +117,7 @@ def main(argv=None):
                 except:
                     print("Error reading image {}!".format(im_fn))
                     continue
-                print(im.shape)
+                # print(im.shape)
 
                 imgWithoutTable, rectPoint = splitTable(im)
                 refineRectPoint = refineTable(rectPoint)
