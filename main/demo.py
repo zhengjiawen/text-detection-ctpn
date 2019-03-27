@@ -165,14 +165,14 @@ def main(argv=None):
                           "w") as f:
                     for i, point in enumerate(refineRectPoint):
                         x, y, w, h = point
-                        seq = (str(x), str(y), str(x+w), str(y+h), 1)
+                        seq = (str(x), str(y), str(x+w), str(y+h), str(1))
                         line = ",".join(seq)
                         if len(boxes) != 0 and i != len(refineRectPoint)-1:
                             line += "\r\n"
                         f.writelines(line)
 
                     for i, box in enumerate(boxes):
-                        seq = (str(box[0,0]), str(box[0,1]), str(box[2,0]), str(box[2,1]), 0)
+                        seq = (str(box[0,0]), str(box[0,1]), str(box[2,0]), str(box[2,1]), str(0))
                         line = ",".join(seq)
                         if i != len(boxes)-1:
                             line += "\r\n"
