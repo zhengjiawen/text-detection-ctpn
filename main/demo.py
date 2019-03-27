@@ -12,8 +12,11 @@ sys.path.append(os.getcwd())
 from nets import model_train as model
 from utils.rpn_msr.proposal_layer import proposal_layer
 from utils.text_connector.detectors import TextDetector
+testDataPath = '/data/home/zjw/dataset/icdar2013/Challenge2_Test_Task12_Images/'
+# testDataPath = '/data/home/zjw/pythonFile/pdfOcr/pdfOcrJpg/'
+tf.app.flags.DEFINE_string('test_data_path', testDataPath, '')
 
-tf.app.flags.DEFINE_string('test_data_path', 'data/demo/', '')
+# tf.app.flags.DEFINE_string('test_data_path', 'data/demo/', '')
 tf.app.flags.DEFINE_string('output_path', 'data/res/', '')
 tf.app.flags.DEFINE_string('gpu', '0', '')
 tf.app.flags.DEFINE_string('checkpoint_path', 'checkpoints_mlt/', '')
@@ -100,20 +103,31 @@ def main(argv=None):
                 boxes = textdetector.detect(textsegs, scores[:, np.newaxis], img.shape[:2])
                 boxes = np.array(boxes, dtype=np.int)
 
+                if boxes is not None:
+                    boxes = boxes[:, :8].reshape((-1, 4, 2))
+                    boxes[:, :, 0] =boxes[:,:,0]/ rw
+                    boxes[:, :, 1] = boxes[:,:,1]/rh
+
+
                 cost_time = (time.time() - start)
                 print("cost time: {:.2f}s".format(cost_time))
 
                 for i, box in enumerate(boxes):
-                    cv2.polylines(img, [box[:8].astype(np.int32).reshape((-1, 1, 2))], True, color=(0, 255, 0),
+                    cv2.polylines(img, [box.astype(np.int32).reshape((-1,1,2))], True, color=(0, 255, 0),
                                   thickness=2)
                 img = cv2.resize(img, None, None, fx=1.0 / rh, fy=1.0 / rw, interpolation=cv2.INTER_LINEAR)
                 cv2.imwrite(os.path.join(FLAGS.output_path, os.path.basename(im_fn)), img[:, :, ::-1])
 
-                with open(os.path.join(FLAGS.output_path, os.path.splitext(os.path.basename(im_fn))[0]) + ".txt",
+                with open(os.path.join(FLAGS.output_path, 'res_'+os.path.splitext(os.path.basename(im_fn))[0]) + ".txt",
                           "w") as f:
                     for i, box in enumerate(boxes):
-                        line = ",".join(str(box[k]) for k in range(8))
-                        line += "," + str(scores[i]) + "\r\n"
+                        seq = (str(box[0,0]), str(box[0,1]), str(box[2,0]), str(box[2,1]))
+                        line = ",".join(seq)
+                        if i != len(boxes)-1:
+                            line += "\r\n"
+
+                        # line = ",".join(str(box[k]) for k in range(8))
+                        # line += "," + str(scores[i]) + "\r\n"
                         f.writelines(line)
 
 
