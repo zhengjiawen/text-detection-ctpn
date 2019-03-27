@@ -122,6 +122,9 @@ def main(argv=None):
                 imgWithoutTable, rectPoint = splitTable(im)
                 refineRectPoint = refineTable(rectPoint)
 
+                imgWithoutTable = cv.cvtColor(im, cv.COLOR_GRAY2RGB)
+
+
                 img, (rh, rw) = resize_image(imgWithoutTable)
                 h, w, c = img.shape
                 im_info = np.array([h, w, c]).reshape([1, 3])
