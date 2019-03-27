@@ -59,7 +59,8 @@ def resize_image(img):
 
 
 def splitTable(oriImg):
-    img = oriImg.copy()
+    img = cv.cvtColor(oriImg, cv.COLOR_RGB2GRAY)
+
     tablePointer, rectPoint = ts.tableSeg(img)
     rectPoint = rectPoint.tolist()
     rectPoint.sort(key=lambda x: (x[1], x[0]))
@@ -117,6 +118,7 @@ def main(argv=None):
                 except:
                     print("Error reading image {}!".format(im_fn))
                     continue
+                print(im.shape)
 
                 imgWithoutTable, rectPoint = splitTable(im)
                 refineRectPoint = refineTable(rectPoint)
