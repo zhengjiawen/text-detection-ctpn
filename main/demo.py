@@ -7,13 +7,16 @@ import time
 import cv2
 import numpy as np
 import tensorflow as tf
+from utils import tableSegmentation as ts
+import cv2 as cv
+
 
 sys.path.append(os.getcwd())
 from nets import model_train as model
 from utils.rpn_msr.proposal_layer import proposal_layer
 from utils.text_connector.detectors import TextDetector
-testDataPath = '/data/home/zjw/dataset/icdar2013/Challenge2_Test_Task12_Images/'
-# testDataPath = '/data/home/zjw/pythonFile/pdfOcr/pdfOcrJpg/'
+# testDataPath = '/data/home/zjw/dataset/icdar2013/Challenge2_Test_Task12_Images/'
+testDataPath = '/data/home/zjw/pythonFile/pdfOcr/pdfOcrJpg/'
 tf.app.flags.DEFINE_string('test_data_path', testDataPath, '')
 
 # tf.app.flags.DEFINE_string('test_data_path', 'data/demo/', '')
@@ -54,6 +57,32 @@ def resize_image(img):
     return re_im, (new_h / img_size[0], new_w / img_size[1])
 
 
+def splitTable(oriImg):
+    img = oriImg.copy()
+    tablePointer, rectPoint = ts.tableSeg(img)
+    rectPoint = rectPoint.tolist()
+    rectPoint.sort(key=lambda x: (x[1], x[0]))
+
+    # 将表格部分置为白色
+    for i, pointer in enumerate(tablePointer):
+        x, y, w, h = pointer
+        cv.rectangle(img, (x, y), (x + w, y + h), 255, -1)
+
+    return img, rectPoint
+
+def refineTable(rectPoint):
+    rectPoint = rectPoint.tolist()
+    rectPoint.sort(key=lambda  x:(x[1], x[0]))
+
+    # 切割出cell
+    for i, pointer in enumerate(rectPoint):
+        x, y, w, h = pointer
+        if h < 8 or w < 8:
+            rectPoint.pop(i)
+            continue
+    return rectPoint
+
+
 def main(argv=None):
     if os.path.exists(FLAGS.output_path):
         shutil.rmtree(FLAGS.output_path)
@@ -88,7 +117,10 @@ def main(argv=None):
                     print("Error reading image {}!".format(im_fn))
                     continue
 
-                img, (rh, rw) = resize_image(im)
+                imgWithoutTable, rectPoint = splitTable(im)
+                refineRectPoint = refineTable(rectPoint)
+
+                img, (rh, rw) = resize_image(imgWithoutTable)
                 h, w, c = img.shape
                 im_info = np.array([h, w, c]).reshape([1, 3])
                 bbox_pred_val, cls_prob_val = sess.run([bbox_pred, cls_prob],
@@ -113,15 +145,28 @@ def main(argv=None):
                 print("cost time: {:.2f}s".format(cost_time))
 
                 for i, box in enumerate(boxes):
-                    cv2.polylines(img, [box.astype(np.int32).reshape((-1,1,2))], True, color=(0, 255, 0),
+                    cv2.polylines(im, [box.astype(np.int32).reshape((-1,1,2))], True, color=(0, 255, 0),
                                   thickness=2)
-                img = cv2.resize(img, None, None, fx=1.0 / rh, fy=1.0 / rw, interpolation=cv2.INTER_LINEAR)
+                for point in refineRectPoint:
+                    x, y, w, h = point
+                    cv.rectangle(im, (x, y), (x + w, y + h), (255, 0, 0))
+                # img = cv2.resize(img, None, None, fx=1.0 / rh, fy=1.0 / rw, interpolation=cv2.INTER_LINEAR)
                 cv2.imwrite(os.path.join(FLAGS.output_path, os.path.basename(im_fn)), img[:, :, ::-1])
+
+
 
                 with open(os.path.join(FLAGS.output_path, 'res_'+os.path.splitext(os.path.basename(im_fn))[0]) + ".txt",
                           "w") as f:
+                    for i, point in enumerate(refineRectPoint):
+                        x, y, w, h = point
+                        seq = (str(x), str(y), str(x+w), str(y+h), 1)
+                        line = ",".join(seq)
+                        if len(boxes) != 0 and i != len(refineRectPoint)-1:
+                            line += "\r\n"
+                        f.writelines(line)
+
                     for i, box in enumerate(boxes):
-                        seq = (str(box[0,0]), str(box[0,1]), str(box[2,0]), str(box[2,1]))
+                        seq = (str(box[0,0]), str(box[0,1]), str(box[2,0]), str(box[2,1]), 0)
                         line = ",".join(seq)
                         if i != len(boxes)-1:
                             line += "\r\n"
@@ -129,6 +174,7 @@ def main(argv=None):
                         # line = ",".join(str(box[k]) for k in range(8))
                         # line += "," + str(scores[i]) + "\r\n"
                         f.writelines(line)
+
 
 
 if __name__ == '__main__':
