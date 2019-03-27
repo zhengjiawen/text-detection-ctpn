@@ -150,11 +150,11 @@ def main(argv=None):
                 print("cost time: {:.2f}s".format(cost_time))
 
                 for i, box in enumerate(boxes):
-                    cv2.polylines(im, [box.astype(np.int32).reshape((-1,1,2))], True, color=(0, 255, 0),
+                    cv2.polylines(im, [box.astype(np.int32).reshape((-1,1,2))], True, color=(0, 0, 0),
                                   thickness=2)
                 for point in refineRectPoint:
                     x, y, w, h = point
-                    cv2.rectangle(im, (x, y), (x + w, y + h), (255, 0, 0))
+                    cv2.rectangle(im, (x, y), (x + w, y + h), (0, 0, 0))
                 # img = cv2.resize(img, None, None, fx=1.0 / rh, fy=1.0 / rw, interpolation=cv2.INTER_LINEAR)
                 cv2.imwrite(os.path.join(FLAGS.output_path, os.path.basename(im_fn)), im[:, :, ::-1])
 
