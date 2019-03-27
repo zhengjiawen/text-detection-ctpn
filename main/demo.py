@@ -117,7 +117,7 @@ def main(argv=None):
                 except:
                     print("Error reading image {}!".format(im_fn))
                     continue
-                # print(im.shape)
+                print(im.shape)
 
                 imgWithoutTable, rectPoint = splitTable(im)
                 refineRectPoint = refineTable(rectPoint)
