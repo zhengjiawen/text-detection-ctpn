@@ -7,7 +7,7 @@ import time
 import cv2
 import numpy as np
 import tensorflow as tf
-from utils import tableSegmentation as ts
+from utils.table import tableSegmentation as ts
 import cv2 as cv
 
 
