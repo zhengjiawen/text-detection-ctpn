@@ -7,7 +7,6 @@ import time
 import cv2
 import numpy as np
 import tensorflow as tf
-from utils.table import tableSegmentation as ts
 import cv2 as cv
 
 
@@ -15,6 +14,8 @@ sys.path.append(os.getcwd())
 from nets import model_train as model
 from utils.rpn_msr.proposal_layer import proposal_layer
 from utils.text_connector.detectors import TextDetector
+from utils.table import tableSegmentation as ts
+
 # testDataPath = '/data/home/zjw/dataset/icdar2013/Challenge2_Test_Task12_Images/'
 testDataPath = '/data/home/zjw/pythonFile/pdfOcr/pdfOcrJpg/'
 tf.app.flags.DEFINE_string('test_data_path', testDataPath, '')
