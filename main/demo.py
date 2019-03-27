@@ -157,7 +157,7 @@ def main(argv=None):
                     x, y, w, h = point
                     cv.rectangle(im, (x, y), (x + w, y + h), (255, 0, 0))
                 # img = cv2.resize(img, None, None, fx=1.0 / rh, fy=1.0 / rw, interpolation=cv2.INTER_LINEAR)
-                cv2.imwrite(os.path.join(FLAGS.output_path, os.path.basename(im_fn)), img[:, :, ::-1])
+                cv2.imwrite(os.path.join(FLAGS.output_path, os.path.basename(im_fn)), im[:, :, ::-1])
 
 
 
