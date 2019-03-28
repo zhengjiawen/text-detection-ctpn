@@ -16,11 +16,12 @@ from utils.text_connector.detectors import TextDetector
 from utils.table import tableSegmentation as ts
 
 # testDataPath = '/data/home/zjw/dataset/icdar2013/Challenge2_Test_Task12_Images/'
-testDataPath = '/data/home/zjw/pythonFile/pdfOcr/pdfOcrJpg/'
+# testDataPath = '/data/home/zjw/pythonFile/pdfOcr/pdfOcrJpg/'
+testDataPath = 'data/resImg/'
 tf.app.flags.DEFINE_string('test_data_path', testDataPath, '')
 
 # tf.app.flags.DEFINE_string('test_data_path', 'data/demo/', '')
-tf.app.flags.DEFINE_string('output_path', 'data/res/', '')
+tf.app.flags.DEFINE_string('output_path', 'data/res3/', '')
 tf.app.flags.DEFINE_string('gpu', '0', '')
 tf.app.flags.DEFINE_string('checkpoint_path', 'checkpoints_mlt/', '')
 FLAGS = tf.app.flags.FLAGS
@@ -125,7 +126,11 @@ def main(argv=None):
                 # imgWithoutTable = cv.cvtColor(im, cv.COLOR_GRAY2RGB)
 
 
-                img, (rh, rw) = resize_image(imgWithoutTable)
+                # img, (rh, rw) = resize_image(imgWithoutTable)
+                # test no resize
+                img = imgWithoutTable
+                (rh, rw) = (1,1)
+
                 h, w, c = img.shape
                 im_info = np.array([h, w, c]).reshape([1, 3])
                 bbox_pred_val, cls_prob_val = sess.run([bbox_pred, cls_prob],
@@ -154,7 +159,7 @@ def main(argv=None):
                                   thickness=2)
                 for point in refineRectPoint:
                     x, y, w, h = point
-                    cv2.rectangle(ouputIm, (x, y), (x + w, y + h), (0, 0, 255))
+                    cv2.rectangle(ouputIm, (x, y), (x + w, y + h), (255, 0, 0))
                 # img = cv2.resize(img, None, None, fx=1.0 / rh, fy=1.0 / rw, interpolation=cv2.INTER_LINEAR)
                 cv2.imwrite(os.path.join(FLAGS.output_path, os.path.basename(im_fn)), ouputIm[:, :, ::-1])
 
