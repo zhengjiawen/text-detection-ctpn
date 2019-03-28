@@ -17,7 +17,7 @@ from utils.table import tableSegmentation as ts
 
 # testDataPath = '/data/home/zjw/dataset/icdar2013/Challenge2_Test_Task12_Images/'
 # testDataPath = '/data/home/zjw/pythonFile/pdfOcr/pdfOcrJpg/'
-testDataPath = 'data/resImg/'
+testDataPath = 'data/reImg/'
 tf.app.flags.DEFINE_string('test_data_path', testDataPath, '')
 
 # tf.app.flags.DEFINE_string('test_data_path', 'data/demo/', '')
