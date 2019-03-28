@@ -16,12 +16,12 @@ from utils.text_connector.detectors import TextDetector
 from utils.table import tableSegmentation as ts
 
 # testDataPath = '/data/home/zjw/dataset/icdar2013/Challenge2_Test_Task12_Images/'
-# testDataPath = '/data/home/zjw/pythonFile/pdfOcr/pdfOcrJpg/'
-testDataPath = 'data/reImg/'
+testDataPath = '/data/home/zjw/pythonFile/pdfOcr/pdfOcrJpg/'
+# testDataPath = 'data/reImg/'
 tf.app.flags.DEFINE_string('test_data_path', testDataPath, '')
 
 # tf.app.flags.DEFINE_string('test_data_path', 'data/demo/', '')
-tf.app.flags.DEFINE_string('output_path', 'data/res3/', '')
+tf.app.flags.DEFINE_string('output_path', 'data/res/', '')
 tf.app.flags.DEFINE_string('gpu', '0', '')
 tf.app.flags.DEFINE_string('checkpoint_path', 'checkpoints_mlt/', '')
 FLAGS = tf.app.flags.FLAGS
@@ -45,9 +45,9 @@ def resize_image(img):
     im_size_min = np.min(img_size[0:2])
     im_size_max = np.max(img_size[0:2])
 
-    im_scale = float(600) / float(im_size_min)
+    im_scale = float(800) / float(im_size_min)
     if np.round(im_scale * im_size_max) > 1200:
-        im_scale = float(1200) / float(im_size_max)
+        im_scale = float(1600) / float(im_size_max)
     new_h = int(img_size[0] * im_scale)
     new_w = int(img_size[1] * im_scale)
 
@@ -126,10 +126,10 @@ def main(argv=None):
                 # imgWithoutTable = cv.cvtColor(im, cv.COLOR_GRAY2RGB)
 
 
-                # img, (rh, rw) = resize_image(imgWithoutTable)
+                img, (rh, rw) = resize_image(imgWithoutTable)
                 # test no resize
-                img = imgWithoutTable
-                (rh, rw) = (1,1)
+                # img = imgWithoutTable
+                # (rh, rw) = (1,1)
 
                 h, w, c = img.shape
                 im_info = np.array([h, w, c]).reshape([1, 3])
