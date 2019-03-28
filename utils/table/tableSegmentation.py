@@ -205,7 +205,6 @@ def tableSeg(oriImg):
     # hierarchy = np.squeeze(hierarchy)
 
     rectContours = []
-    rectPointList = []
     contoursPloy = []
 
     for i, contour in enumerate(contours):
@@ -241,7 +240,7 @@ def tableSeg(oriImg):
             x, y, w, h = points
             cv.rectangle(testImg, (x, y), (x + w, y + h), (255, 255, 255))
 
-            cv.imwrite('rectImg/' + str(i) + '.jpg', testImg)
+            # cv.imwrite('rectImg/' + str(i) + '.jpg', testImg)
 
     return tableArray, rectArray
 
