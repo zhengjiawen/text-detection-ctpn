@@ -77,14 +77,14 @@ def refineTable(rectPoint):
     rectPoint.sort(key=lambda  x:(x[1], x[0]))
 
     # 切割出cell
-    popList = []
+    resultPoint = []
     for i, pointer in enumerate(rectPoint):
         x, y, w, h = pointer
         if h < 8 or w < 8:
-            popList.append(i)
-    del(rectPoint[x in popList])
-
-    return rectPoint
+            continue
+        resultPoint.append(pointer)
+    
+    return resultPoint
 
 
 def main(argv=None):
