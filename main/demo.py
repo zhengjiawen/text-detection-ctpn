@@ -154,7 +154,7 @@ def main(argv=None):
                                   thickness=2)
                 for point in refineRectPoint:
                     x, y, w, h = point
-                    cv2.rectangle(ouputIm, (x, y), (x + w, y + h), (0, 255, 0))
+                    cv2.rectangle(ouputIm, (x, y), (x + w, y + h), (0, 0, 255))
                 # img = cv2.resize(img, None, None, fx=1.0 / rh, fy=1.0 / rw, interpolation=cv2.INTER_LINEAR)
                 cv2.imwrite(os.path.join(FLAGS.output_path, os.path.basename(im_fn)), ouputIm[:, :, ::-1])
 
