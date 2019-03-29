@@ -186,7 +186,7 @@ def main(argv=None):
 
                     for i, box in enumerate(boxes):
                         x, y, w, h = str(int(box[0,0])), str(int(box[0,1])), str(int(box[2,0])), str(int(box[2,1]))
-                        cellImg = regImg[x:x+w, y+y+h, :]
+                        cellImg = regImg[x:x+w, y:y+h, :]
                         value = baiduOcr.regWordByBaiduOcr(cellImg)
                         seq = (x, y, h, w, str(0), str(value))
                         line = ",".join(seq)
