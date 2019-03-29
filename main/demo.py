@@ -13,7 +13,9 @@ sys.path.append(os.getcwd())
 from nets import model_train as model
 from utils.rpn_msr.proposal_layer import proposal_layer
 from utils.text_connector.detectors import TextDetector
-from utils.table import tableSegmentation as ts
+from utils.regAndtableSeg import tableSegmentation as ts
+from utils.regAndtableSeg import baiduOcr
+
 
 # testDataPath = '/data/home/zjw/dataset/icdar2013/Challenge2_Test_Task12_Images/'
 testDataPath = '/data/home/zjw/pythonFile/pdfOcr/pdfOcrJpg/'
@@ -83,7 +85,7 @@ def refineTable(rectPoint):
         if h < 8 or w < 8:
             continue
         resultPoint.append(pointer)
-    
+
     return resultPoint
 
 
@@ -169,16 +171,23 @@ def main(argv=None):
 
                 with open(os.path.join(FLAGS.output_path, 'res_'+os.path.splitext(os.path.basename(im_fn))[0]) + ".txt",
                           "w") as f:
+                    regImg = im.copy()
+
                     for i, point in enumerate(refineRectPoint):
                         x, y, w, h = point
-                        seq = (str(x), str(y), str(x+w), str(y+h), str(1))
+                        cellImg = regImg[x:x+w, y+y+h, :]
+                        value = baiduOcr.regWordByBaiduOcr(cellImg)
+                        seq = (str(x), str(y), str(x+w), str(y+h), str(1), str(value))
                         line = ",".join(seq)
                         if len(boxes) != 0 and i != len(refineRectPoint)-1:
                             line += "\r\n"
                         f.writelines(line)
 
                     for i, box in enumerate(boxes):
-                        seq = (str(box[0,0]), str(box[0,1]), str(box[2,0]), str(box[2,1]), str(0))
+                        x, y, w, h = str(box[0,0]), str(box[0,1]), str(box[2,0]), str(box[2,1])
+                        cellImg = regImg[x:x+w, y+y+h, :]
+                        value = baiduOcr.regWordByBaiduOcr(cellImg)
+                        seq = (x, y, h, w, str(0), str(value))
                         line = ",".join(seq)
                         if i != len(boxes)-1:
                             line += "\r\n"
