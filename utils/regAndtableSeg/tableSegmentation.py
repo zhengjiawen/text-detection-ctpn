@@ -244,7 +244,7 @@ def tableSeg(oriImg):
 
     return tableArray, rectArray
 
-# test for table seg
+# test for regAndtableSeg seg
 def tableSegTest():
     oriImg = cv.imread(path+name, 0)
     img = cv.bitwise_not(oriImg)
