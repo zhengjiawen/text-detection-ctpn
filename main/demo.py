@@ -122,7 +122,7 @@ def main(argv=None):
                 except:
                     print("Error reading image {}!".format(im_fn))
                     continue
-                print(im.shape)
+                # print(im.shape)
 
                 imgWithoutTable, rectPoint = splitTable(im)
                 refineRectPoint = refineTable(rectPoint)
@@ -185,6 +185,7 @@ def main(argv=None):
                         f.writelines(line)
 
                     for i, box in enumerate(boxes):
+                        box = int(box)
                         x, y, w, h = str(box[0,0]), str(box[0,1]), str(box[2,0]), str(box[2,1])
                         cellImg = regImg[x:x+w, y+y+h, :]
                         value = baiduOcr.regWordByBaiduOcr(cellImg)
