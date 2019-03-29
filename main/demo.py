@@ -176,7 +176,7 @@ def main(argv=None):
 
                     for i, point in enumerate(refineRectPoint):
                         x, y, w, h = point
-                        cellImg = regImg[x:x+w, y+y+h, :]
+                        cellImg = regImg[x:x+w, y:y+h,:]
                         value = baiduOcr.regWordByBaiduOcr(cellImg)
                         seq = (str(x), str(y), str(x+w), str(y+h), str(1), str(value))
                         line = ",".join(seq)
