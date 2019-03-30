@@ -62,7 +62,7 @@ def resize_image(img):
 
 def splitTable(oriImg):
     img = oriImg.copy()
-    grayImg = cv2.cvtColor(oriImg, cv2.COLOR_RGB2GRAY)
+    grayImg = cv2.cvtColor(img, cv2.COLOR_RGB2GRAY)
 
     tablePointer, rectPoint = ts.tableSeg(grayImg)
     rectPoint = rectPoint.tolist()
@@ -173,11 +173,13 @@ def main(argv=None):
                 with open(os.path.join(FLAGS.output_path, 'res_'+os.path.splitext(os.path.basename(im_fn))[0]) + ".txt",
                           "w") as f:
                     regImg = im.copy()
+                    # print(regImg.shape)
 
                     for i, point in enumerate(refineRectPoint):
                         x, y, w, h = point
-                        cellImg = regImg[x:x+w, y:y+h,:]
+                        cellImg = regImg[y:y+h,x:x+w,:]
                         value = baiduOcr.regWordByBaiduOcr(cellImg)
+                        # value = ""
                         seq = (str(x), str(y), str(x+w), str(y+h), str(1), str(value))
                         line = ",".join(seq)
                         if len(boxes) != 0 and i != len(refineRectPoint)-1:
@@ -185,11 +187,13 @@ def main(argv=None):
                         f.writelines(line)
 
                     for i, box in enumerate(boxes):
+                        # print(box)
                         x, y, x2, y2 = box[0,0], box[0,1], box[2,0], box[2,1]
-                        cellImg = regImg[x:x2, y:y2, :]
-                        print(cellImg.shape)
-                        print(x+" "+y+" "+x2+ " "+ y2)
+                        cellImg = regImg[ y:y2,x:x2, :]
+                        # print(cellImg.shape)
+                        # print(str(x)+" "+str(y)+" "+str(x2)+ " "+ str(y2))
                         value = baiduOcr.regWordByBaiduOcr(cellImg)
+                        # value = ""
                         seq = (str(x), str(y), str(x2), str(y2), str(0), str(value))
                         line = ",".join(seq)
                         if i != len(boxes)-1:
