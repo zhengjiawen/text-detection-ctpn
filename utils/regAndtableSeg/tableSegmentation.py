@@ -62,7 +62,7 @@ def findRectPoint(contours):
     return rectMin, rectMax
 
 
-# 校正旋转的矩形
+# 校正旋转的矩形，弃用
 def rotationImg(oriImg):
 
     img = cv.bitwise_not(oriImg)
@@ -375,6 +375,51 @@ def splitAllTableTest():
             x, y, w, h = pointer
             cv.rectangle(oriImg, (x, y), (x+w, y+h), 255, -1)
             cv.imwrite('notTable/'+name+'.jpg', oriImg)
+
+# 得到图片在x,y轴投影的范围的分数
+def getScaleScore(binaryImg):
+    # 在y轴投影,求x轴非零
+    existArray = (binaryImg > 0) * 1.0
+    factorW = np.ones(w)
+    projectionY = np.dot(existArray, factorW)
+
+    scaleIndexY = np.where(projectionY > 10)
+    scaleY = scaleIndexY[0][-1] - scaleIndexY[0][0]
+
+    # 在x轴投影
+    factorH = np.ones(h)
+    projectionX = np.dot(factorH, existArray)
+    scaleIndexX = np.where(projectionX > 20)
+    scaleX = scaleIndexX[0][-1] - scaleIndexX[0][0]
+
+    score = scaleX + scaleY
+    return score
+
+# 校正旋转的图片，根据图片在x,y轴的投影的覆盖范围
+def reviseRotationImg(oriImg):
+    h, w = oriImg.shape
+    img = cv.bitwise_not(oriImg)
+    # 二值化
+    ret, binaryImg = cv.threshold(img, 0, 255, cv.THRESH_OTSU)
+    # 开操作，消除噪声
+    kernel = cv.getStructuringElement(cv.MORPH_RECT, (3, 3))
+    binaryImg = cv.morphologyEx(binaryImg, cv.MORPH_OPEN, kernel)
+    center = (w // 2, h // 2)
+    scores = []
+    rotatedMatrix = []
+    for angel in range(-45, 45):
+        matrix = cv.getRotationMatrix2D(center, angel, 1.0)
+        rotated = cv.warpAffine(binaryImg, matrix, (w, h), flags=cv.INTER_CUBIC, borderMode=cv.BORDER_REPLICATE)
+        rotatedMatrix.append(matrix)
+        score = getScaleScore(rotated)
+        scores.append(score)
+
+
+    minScoreIndex = scores.index(min(scores))
+    reviseMatrix = rotatedMatrix[minScoreIndex]
+    reviseImg = cv.warpAffine(oriImg, reviseMatrix, (w, h), flags=cv.INTER_CUBIC, borderMode=cv.BORDER_REPLICATE)
+    return reviseImg
+
 
 if __name__ == '__main__':
     splitAllTableTest()
