@@ -378,6 +378,8 @@ def splitAllTableTest():
 
 # 得到图片在x,y轴投影的范围的分数
 def getScaleScore(binaryImg):
+    h, w = binaryImg.shape
+
     # 在y轴投影,求x轴非零
     existArray = (binaryImg > 0) * 1.0
     factorW = np.ones(w)
