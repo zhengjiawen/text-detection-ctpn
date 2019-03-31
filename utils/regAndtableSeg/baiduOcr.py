@@ -36,3 +36,4 @@ def regWordByBaiduOcr(img, acc = False):
         for item in word_result:
             line += item['words']
         return line
+
